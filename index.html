@@ -2,64 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPT API Chat</title>
-    <style>
-        #chat-container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #f8f8f8;
-        }
-    </style>
+    <title>Bitcoin Price</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
+    <h1 id="btcPrice">BTC price: Loading...</h1>
+    <script>
+        function updateBTCPrice() {
+            $.get("/get_btc_price", function(data) {
+                $("#btcPrice").text("BTC price: " + data.btc_price);
+            });
+        }
 
-<div id="chat-container">
-    <div id="chat"></div>
-    <input type="text" id="user-input" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
-</div>
+        // Update the BTC price every second
+        setInterval(updateBTCPrice, 1000);
 
-<script>
-    const apiKey = "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";
-
-async function sendMessage() {
-    const userInput = document.getElementById("user-input").value;
-    if (userInput.trim() === "") return;
-
-    const chatContainer = document.getElementById("chat");
-    chatContainer.innerHTML += `<p>User: ${userInput}</p>`;
-
-    const apiUrl = "https://api.openai.com/v1/engines/davinci-codex/completions";
-    const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-            prompt: userInput,
-            max_tokens: 150
-        })
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        const modelResponse = data.choices[0].text.trim(); // Trim to remove extra whitespace
-
-        chatContainer.innerHTML += `<p>AI: ${modelResponse}</p>`;
-    } else {
-        chatContainer.innerHTML += `<p>AI: Error fetching response from the API</p>`;
-    }
-
-    document.getElementById("user-input").value = "";
-}
-
-</script>
-
+        // Initial update
+        updateBTCPrice();
+    </script>
 </body>
 </html>
